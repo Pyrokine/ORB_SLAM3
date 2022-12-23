@@ -52,15 +52,15 @@
 #include "MapPoint.h"
 #include "Frame.h"
 
-#include<Eigen/Dense>
-#include<Eigen/Sparse>
+#include <Eigen/Dense>
+#include <Eigen/Sparse>
 
-namespace ORB_SLAM3{
+namespace ORB_SLAM3 {
     class MLPnPsolver {
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-        MLPnPsolver(const Frame &F, const vector<MapPoint*> &vpMapPointMatches);
+        MLPnPsolver(const Frame &F, const vector<MapPoint *> &vpMapPointMatches);
 
         ~MLPnPsolver();
 
@@ -117,15 +117,15 @@ namespace ORB_SLAM3{
          *  translation \f$ \mathbf{t} \f$ as follows:
          *  \f$ \left( \begin{array}{cc} \mathbf{R} & \mathbf{t} \end{array} \right) \f$
          */
-        typedef Eigen::Matrix<double,3,4> transformation_t;
+        typedef Eigen::Matrix<double, 3, 4> transformation_t;
 
         /** A 3-vector describing a translation/camera position */
         typedef Eigen::Vector3d translation_t;
 
 
-
     private:
         void CheckInliers();
+
         bool Refine();
 
         //Functions from de original MLPnP code
@@ -136,33 +136,33 @@ namespace ORB_SLAM3{
          * Result is stored in solution
          */
         void computePose(
-                const bearingVectors_t & f,
-                const points_t & p,
-                const cov3_mats_t & covMats,
-                const std::vector<int>& indices,
-                transformation_t & result);
+                const bearingVectors_t &f,
+                const points_t &p,
+                const cov3_mats_t &covMats,
+                const std::vector<int> &indices,
+                transformation_t &result);
 
-        void mlpnp_gn(Eigen::VectorXd& x,
-                      const points_t& pts,
-                      const std::vector<Eigen::MatrixXd>& nullspaces,
+        void mlpnp_gn(Eigen::VectorXd &x,
+                      const points_t &pts,
+                      const std::vector<Eigen::MatrixXd> &nullspaces,
                       const Eigen::SparseMatrix<double> Kll,
                       bool use_cov);
 
         void mlpnp_residuals_and_jacs(
-                const Eigen::VectorXd& x,
-                const points_t& pts,
-                const std::vector<Eigen::MatrixXd>& nullspaces,
-                Eigen::VectorXd& r,
-                Eigen::MatrixXd& fjac,
+                const Eigen::VectorXd &x,
+                const points_t &pts,
+                const std::vector<Eigen::MatrixXd> &nullspaces,
+                Eigen::VectorXd &r,
+                Eigen::MatrixXd &fjac,
                 bool getJacs);
 
         void mlpnpJacs(
-            const point_t& pt,
-            const Eigen::Vector3d& nullspace_r,
-            const Eigen::Vector3d& nullspace_s,
-            const rodrigues_t& w,
-            const translation_t& t,
-            Eigen::MatrixXd& jacs);
+                const point_t &pt,
+                const Eigen::Vector3d &nullspace_r,
+                const Eigen::Vector3d &nullspace_s,
+                const rodrigues_t &w,
+                const translation_t &t,
+                Eigen::MatrixXd &jacs);
 
         //Auxiliar methods
 
@@ -172,7 +172,7 @@ namespace ORB_SLAM3{
         * \param[in] omega The Rodrigues-parameters of a rotation.
         * \return The 3x3 rotation matrix.
         */
-        Eigen::Matrix3d rodrigues2rot(const Eigen::Vector3d & omega);
+        Eigen::Matrix3d rodrigues2rot(const Eigen::Vector3d &omega);
 
         /**
         * \brief Compute the Rodrigues-parameters of a rotation matrix.
@@ -180,12 +180,12 @@ namespace ORB_SLAM3{
         * \param[in] R The 3x3 rotation matrix.
         * \return The Rodrigues-parameters.
         */
-        Eigen::Vector3d rot2rodrigues(const Eigen::Matrix3d & R);
+        Eigen::Vector3d rot2rodrigues(const Eigen::Matrix3d &R);
 
         //----------------------------------------------------
         //Fields of the solver
         //----------------------------------------------------
-        vector<MapPoint*> mvpMapPointMatches;
+        vector<MapPoint *> mvpMapPointMatches;
 
         // 2D Points
         vector<cv::Point2f> mvP2D;
@@ -246,12 +246,10 @@ namespace ORB_SLAM3{
         // Max square error associated with scale level. Max error = th*th*sigma(level)*sigma(level)
         vector<float> mvMaxError;
 
-        GeometricCamera* mpCamera;
+        GeometricCamera *mpCamera;
     };
 
 }
-
-
 
 
 #endif //ORB_SLAM3_MLPNPSOLVER_H

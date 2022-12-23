@@ -5,46 +5,46 @@
 #include <sophus/formatstring.hpp>
 
 namespace Sophus {
-namespace details {
+    namespace details {
 
-template <class Scalar>
-class Pretty {
- public:
-  static std::string impl(Scalar s) { return FormatString("%", s); }
-};
+        template<class Scalar>
+        class Pretty {
+        public:
+            static std::string impl(Scalar s) { return FormatString("%", s); }
+        };
 
-template <class Scalar, int M, int N>
-class Pretty<Eigen::Matrix<Scalar, M, N>> {
- public:
-  static std::string impl(Matrix<Scalar, M, N> const& v) {
-    return FormatString("\n%\n", v);
-  }
-};
+        template<class Scalar, int M, int N>
+        class Pretty<Eigen::Matrix<Scalar, M, N>> {
+        public:
+            static std::string impl(Matrix<Scalar, M, N> const &v) {
+                return FormatString("\n%\n", v);
+            }
+        };
 
-template <class T>
-std::string pretty(T const& v) {
-  return Pretty<T>::impl(v);
-}
+        template<class T>
+        std::string pretty(T const &v) {
+            return Pretty<T>::impl(v);
+        }
 
-template <class... Args>
-void testFailed(bool& passed, char const* func, char const* file, int line,
-                std::string const& msg) {
-  std::cerr << FormatString("Test failed in function %, file %, line %\n", func,
-                            file, line);
-  std::cerr << msg << "\n\n";
-  passed = false;
-}
-}  // namespace details
+        template<class... Args>
+        void testFailed(bool &passed, char const *func, char const *file, int line,
+                        std::string const &msg) {
+            std::cerr << FormatString("Test failed in function %, file %, line %\n", func,
+                                      file, line);
+            std::cerr << msg << "\n\n";
+            passed = false;
+        }
+    }  // namespace details
 
-void processTestResult(bool passed) {
-  if (!passed) {
-    // LCOV_EXCL_START
-    std::cerr << "failed!" << std::endl << std::endl;
-    exit(-1);
-    // LCOV_EXCL_STOP
-  }
-  std::cerr << "passed." << std::endl << std::endl;
-}
+    void processTestResult(bool passed) {
+        if (!passed) {
+            // LCOV_EXCL_START
+            std::cerr << "failed!" << std::endl << std::endl;
+            exit(-1);
+            // LCOV_EXCL_STOP
+        }
+        std::cerr << "passed." << std::endl << std::endl;
+    }
 }  // namespace Sophus
 
 #define SOPHUS_STRINGIFY(x) #x

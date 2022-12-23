@@ -32,138 +32,158 @@
 #include <boost/serialization/export.hpp>
 
 
-namespace ORB_SLAM3
-{
-class Viewer;
-class Map;
-class MapPoint;
-class KeyFrame;
-class KeyFrameDatabase;
-class Frame;
-class KannalaBrandt8;
-class Pinhole;
+namespace ORB_SLAM3 {
+    class Viewer;
+
+    class Map;
+
+    class MapPoint;
+
+    class KeyFrame;
+
+    class KeyFrameDatabase;
+
+    class Frame;
+
+    class KannalaBrandt8;
+
+    class Pinhole;
 
 //BOOST_CLASS_EXPORT_GUID(Pinhole, "Pinhole")
 //BOOST_CLASS_EXPORT_GUID(KannalaBrandt8, "KannalaBrandt8")
 
-class Atlas
-{
-    friend class boost::serialization::access;
+    class Atlas {
+        friend class boost::serialization::access;
 
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
-    {
-        ar.template register_type<Pinhole>();
-        ar.template register_type<KannalaBrandt8>();
+        template<class Archive>
+        void serialize(Archive &ar, const unsigned int version) {
+            ar.template register_type<Pinhole>();
+            ar.template register_type<KannalaBrandt8>();
 
-        // Save/load a set structure, the set structure is broken in libboost 1.58 for ubuntu 16.04, a vector is serializated
-        //ar & mspMaps;
-        ar & mvpBackupMaps;
-        ar & mvpCameras;
-        // Need to save/load the static Id from Frame, KeyFrame, MapPoint and Map
-        ar & Map::nNextId;
-        ar & Frame::nNextId;
-        ar & KeyFrame::nNextId;
-        ar & MapPoint::nNextId;
-        ar & GeometricCamera::nNextId;
-        ar & mnLastInitKFidMap;
-    }
+            // Save/load a set structure, the set structure is broken in libboost 1.58 for ubuntu 16.04, a vector is serializated
+            //ar & mspMaps;
+            ar & mvpBackupMaps;
+            ar & mvpCameras;
+            // Need to save/load the static Id from Frame, KeyFrame, MapPoint and Map
+            ar & Map::nNextId;
+            ar & Frame::nNextId;
+            ar & KeyFrame::nNextId;
+            ar & MapPoint::nNextId;
+            ar & GeometricCamera::nNextId;
+            ar & mnLastInitKFidMap;
+        }
 
-public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    Atlas();
-    Atlas(int initKFid); // When its initialization the first map is created
-    ~Atlas();
+        Atlas();
 
-    void CreateNewMap();
-    void ChangeMap(Map* pMap);
+        Atlas(int initKFid); // When its initialization the first map is created
+        ~Atlas();
 
-    unsigned long int GetLastInitKFid();
+        void CreateNewMap();
 
-    void SetViewer(Viewer* pViewer);
+        void ChangeMap(Map *pMap);
 
-    // Method for change components in the current map
-    void AddKeyFrame(KeyFrame* pKF);
-    void AddMapPoint(MapPoint* pMP);
-    //void EraseMapPoint(MapPoint* pMP);
-    //void EraseKeyFrame(KeyFrame* pKF);
+        unsigned long int GetLastInitKFid();
 
-    GeometricCamera* AddCamera(GeometricCamera* pCam);
-    std::vector<GeometricCamera*> GetAllCameras();
+        void SetViewer(Viewer *pViewer);
 
-    /* All methods without Map pointer work on current map */
-    void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
-    void InformNewBigChange();
-    int GetLastBigChangeIdx();
+        // Method for change components in the current map
+        void AddKeyFrame(KeyFrame *pKF);
 
-    long unsigned int MapPointsInMap();
-    long unsigned KeyFramesInMap();
+        void AddMapPoint(MapPoint *pMP);
+        //void EraseMapPoint(MapPoint* pMP);
+        //void EraseKeyFrame(KeyFrame* pKF);
 
-    // Method for get data in current map
-    std::vector<KeyFrame*> GetAllKeyFrames();
-    std::vector<MapPoint*> GetAllMapPoints();
-    std::vector<MapPoint*> GetReferenceMapPoints();
+        GeometricCamera *AddCamera(GeometricCamera *pCam);
 
-    vector<Map*> GetAllMaps();
+        std::vector<GeometricCamera *> GetAllCameras();
 
-    int CountMaps();
+        /* All methods without Map pointer work on current map */
+        void SetReferenceMapPoints(const std::vector<MapPoint *> &vpMPs);
 
-    void clearMap();
+        void InformNewBigChange();
 
-    void clearAtlas();
+        int GetLastBigChangeIdx();
 
-    Map* GetCurrentMap();
+        long unsigned int MapPointsInMap();
 
-    void SetMapBad(Map* pMap);
-    void RemoveBadMaps();
+        long unsigned KeyFramesInMap();
 
-    bool isInertial();
-    void SetInertialSensor();
-    void SetImuInitialized();
-    bool isImuInitialized();
+        // Method for get data in current map
+        std::vector<KeyFrame *> GetAllKeyFrames();
 
-    // Function for garantee the correction of serialization of this object
-    void PreSave();
-    void PostLoad();
+        std::vector<MapPoint *> GetAllMapPoints();
 
-    map<long unsigned int, KeyFrame*> GetAtlasKeyframes();
+        std::vector<MapPoint *> GetReferenceMapPoints();
 
-    void SetKeyFrameDababase(KeyFrameDatabase* pKFDB);
-    KeyFrameDatabase* GetKeyFrameDatabase();
+        vector<Map *> GetAllMaps();
 
-    void SetORBVocabulary(ORBVocabulary* pORBVoc);
-    ORBVocabulary* GetORBVocabulary();
+        int CountMaps();
 
-    long unsigned int GetNumLivedKF();
+        void clearMap();
 
-    long unsigned int GetNumLivedMP();
+        void clearAtlas();
 
-protected:
+        Map *GetCurrentMap();
 
-    std::set<Map*> mspMaps;
-    std::set<Map*> mspBadMaps;
-    // Its necessary change the container from set to vector because libboost 1.58 and Ubuntu 16.04 have an error with this cointainer
-    std::vector<Map*> mvpBackupMaps;
+        void SetMapBad(Map *pMap);
 
-    Map* mpCurrentMap;
+        void RemoveBadMaps();
 
-    std::vector<GeometricCamera*> mvpCameras;
+        bool isInertial();
 
-    unsigned long int mnLastInitKFidMap;
+        void SetInertialSensor();
 
-    Viewer* mpViewer;
-    bool mHasViewer;
+        void SetImuInitialized();
 
-    // Class references for the map reconstruction from the save file
-    KeyFrameDatabase* mpKeyFrameDB;
-    ORBVocabulary* mpORBVocabulary;
+        bool isImuInitialized();
 
-    // Mutex
-    std::mutex mMutexAtlas;
+        // Function for garantee the correction of serialization of this object
+        void PreSave();
+
+        void PostLoad();
+
+        map<long unsigned int, KeyFrame *> GetAtlasKeyframes();
+
+        void SetKeyFrameDababase(KeyFrameDatabase *pKFDB);
+
+        KeyFrameDatabase *GetKeyFrameDatabase();
+
+        void SetORBVocabulary(ORBVocabulary *pORBVoc);
+
+        ORBVocabulary *GetORBVocabulary();
+
+        long unsigned int GetNumLivedKF();
+
+        long unsigned int GetNumLivedMP();
+
+    protected:
+
+        std::set<Map *> mspMaps;
+        std::set<Map *> mspBadMaps;
+        // Its necessary change the container from set to vector because libboost 1.58 and Ubuntu 16.04 have an error with this cointainer
+        std::vector<Map *> mvpBackupMaps;
+
+        Map *mpCurrentMap;
+
+        std::vector<GeometricCamera *> mvpCameras;
+
+        unsigned long int mnLastInitKFidMap;
+
+        Viewer *mpViewer;
+        bool mHasViewer;
+
+        // Class references for the map reconstruction from the save file
+        KeyFrameDatabase *mpKeyFrameDB;
+        ORBVocabulary *mpORBVocabulary;
+
+        // Mutex
+        std::mutex mMutexAtlas;
 
 
-}; // class Atlas
+    }; // class Atlas
 
 } // namespace ORB_SLAM3
 

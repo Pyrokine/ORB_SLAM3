@@ -64,12 +64,12 @@
 /**
 Modified by Mark Pupilli from:
 
-	"Initializer/finalizer sample for MSVC and GCC.
+    "Initializer/finalizer sample for MSVC and GCC.
     2010 Joe Lowe. Released into the public domain."
 
-	"For MSVC, places a ptr to the function in the user initializer section (.CRT$XCU), basically the same thing the compiler does for the constructor calls for static C++ objects. For GCC, uses a constructor attribute."
+    "For MSVC, places a ptr to the function in the user initializer section (.CRT$XCU), basically the same thing the compiler does for the constructor calls for static C++ objects. For GCC, uses a constructor attribute."
 
-	(As posted on Stack OVerflow)
+    (As posted on Stack OVerflow)
 */
 #  define G2O_ATTRIBUTE_CONSTRUCTOR(f) \
      __pragma(section(".CRT$XCU",read)) \
@@ -115,7 +115,7 @@ Modified by Mark Pupilli from:
    {char c=' ';while(c != '\n' && f.good() && !(f).eof()) (f).get(c);}
 
 #ifndef PVAR
-  #define PVAR(s) \
+#define PVAR(s) \
     #s << " = " << (s) << std::flush
 #endif
 

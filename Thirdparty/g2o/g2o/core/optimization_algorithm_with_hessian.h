@@ -31,41 +31,42 @@
 
 namespace g2o {
 
-  class Solver;
+    class Solver;
 
-  /**
-   * \brief Base for solvers operating on the approximated Hessian, e.g., Gauss-Newton, Levenberg
-   */
-  class  OptimizationAlgorithmWithHessian : public OptimizationAlgorithm
-  {
+    /**
+     * \brief Base for solvers operating on the approximated Hessian, e.g., Gauss-Newton, Levenberg
+     */
+    class OptimizationAlgorithmWithHessian : public OptimizationAlgorithm {
     public:
-      explicit OptimizationAlgorithmWithHessian(Solver* solver);
-      virtual ~OptimizationAlgorithmWithHessian();
+        explicit OptimizationAlgorithmWithHessian(Solver *solver);
 
-      virtual bool init(bool online = false);
+        virtual ~OptimizationAlgorithmWithHessian();
 
-      virtual bool computeMarginals(SparseBlockMatrix<MatrixXd>& spinv, const std::vector<std::pair<int, int> >& blockIndices);
+        virtual bool init(bool online = false);
 
-      virtual bool buildLinearStructure();
+        virtual bool computeMarginals(SparseBlockMatrix<MatrixXd> &spinv, const std::vector<std::pair<int, int> > &blockIndices);
 
-      virtual void updateLinearSystem();
+        virtual bool buildLinearStructure();
 
-      virtual bool updateStructure(const std::vector<HyperGraph::Vertex*>& vset, const HyperGraph::EdgeSet& edges);
+        virtual void updateLinearSystem();
 
-      //! return the underlying solver used to solve the linear system
-      Solver* solver() { return _solver;}
+        virtual bool updateStructure(const std::vector<HyperGraph::Vertex *> &vset, const HyperGraph::EdgeSet &edges);
 
-      /**
-       * write debug output of the Hessian if system is not positive definite
-       */
-      virtual void setWriteDebug(bool writeDebug);
-      virtual bool writeDebug() const { return _writeDebug->value();}
+        //! return the underlying solver used to solve the linear system
+        Solver *solver() { return _solver; }
+
+        /**
+         * write debug output of the Hessian if system is not positive definite
+         */
+        virtual void setWriteDebug(bool writeDebug);
+
+        virtual bool writeDebug() const { return _writeDebug->value(); }
 
     protected:
-      Solver* _solver;
-      Property<bool>* _writeDebug;
+        Solver *_solver;
+        Property<bool> *_writeDebug;
 
-  };
+    };
 
 }// end namespace
 

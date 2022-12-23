@@ -25,7 +25,7 @@
 namespace ORB_SLAM3 {
 //BOOST_CLASS_EXPORT_GUID(Pinhole, "Pinhole")
 
-    long unsigned int GeometricCamera::nNextId=0;
+    long unsigned int GeometricCamera::nNextId = 0;
 
     cv::Point2f Pinhole::project(const cv::Point3f &p3D) {
         return cv::Point2f(mvParameters[0] * p3D.x / p3D.z + mvParameters[2],
@@ -53,14 +53,13 @@ namespace ORB_SLAM3 {
         return Eigen::Vector2f(point.x, point.y);
     }
 
-    float Pinhole::uncertainty2(const Eigen::Matrix<double,2,1> &p2D)
-    {
+    float Pinhole::uncertainty2(const Eigen::Matrix<double, 2, 1> &p2D) {
         return 1.0;
     }
 
     Eigen::Vector3f Pinhole::unprojectEig(const cv::Point2f &p2D) {
         return Eigen::Vector3f((p2D.x - mvParameters[2]) / mvParameters[0], (p2D.y - mvParameters[3]) / mvParameters[1],
-                           1.f);
+                               1.f);
     }
 
     cv::Point3f Pinhole::unproject(const cv::Point2f &p2D) {
@@ -80,14 +79,14 @@ namespace ORB_SLAM3 {
         return Jac;
     }
 
-    bool Pinhole::ReconstructWithTwoViews(const std::vector<cv::KeyPoint>& vKeys1, const std::vector<cv::KeyPoint>& vKeys2, const std::vector<int> &vMatches12,
-                                 Sophus::SE3f &T21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated){
-        if(!tvr){
+    bool Pinhole::ReconstructWithTwoViews(const std::vector<cv::KeyPoint> &vKeys1, const std::vector<cv::KeyPoint> &vKeys2, const std::vector<int> &vMatches12,
+                                          Sophus::SE3f &T21, std::vector<cv::Point3f> &vP3D, std::vector<bool> &vbTriangulated) {
+        if (!tvr) {
             Eigen::Matrix3f K = this->toK_();
             tvr = new TwoViewReconstruction(K);
         }
 
-        return tvr->Reconstruct(vKeys1,vKeys2,vMatches12,T21,vP3D,vbTriangulated);
+        return tvr->Reconstruct(vKeys1, vKeys2, vMatches12, T21, vP3D, vbTriangulated);
     }
 
 
@@ -104,38 +103,38 @@ namespace ORB_SLAM3 {
     }
 
 
-    bool Pinhole::epipolarConstrain(GeometricCamera* pCamera2,  const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const Eigen::Matrix3f& R12, const Eigen::Vector3f& t12, const float sigmaLevel, const float unc) {
+    bool Pinhole::epipolarConstrain(GeometricCamera *pCamera2, const cv::KeyPoint &kp1, const cv::KeyPoint &kp2, const Eigen::Matrix3f &R12, const Eigen::Vector3f &t12, const float sigmaLevel, const float unc) {
         //Compute Fundamental Matrix
         Eigen::Matrix3f t12x = Sophus::SO3f::hat(t12);
         Eigen::Matrix3f K1 = this->toK_();
         Eigen::Matrix3f K2 = pCamera2->toK_();
         Eigen::Matrix3f F12 = K1.transpose().inverse() * t12x * R12 * K2.inverse();
-        
+
         // Epipolar line in second image l = x1'F12 = [a b c]
-        const float a = kp1.pt.x*F12(0,0)+kp1.pt.y*F12(1,0)+F12(2,0);
-        const float b = kp1.pt.x*F12(0,1)+kp1.pt.y*F12(1,1)+F12(2,1);
-        const float c = kp1.pt.x*F12(0,2)+kp1.pt.y*F12(1,2)+F12(2,2);
+        const float a = kp1.pt.x * F12(0, 0) + kp1.pt.y * F12(1, 0) + F12(2, 0);
+        const float b = kp1.pt.x * F12(0, 1) + kp1.pt.y * F12(1, 1) + F12(2, 1);
+        const float c = kp1.pt.x * F12(0, 2) + kp1.pt.y * F12(1, 2) + F12(2, 2);
 
-        const float num = a*kp2.pt.x+b*kp2.pt.y+c;
+        const float num = a * kp2.pt.x + b * kp2.pt.y + c;
 
-        const float den = a*a+b*b;
+        const float den = a * a + b * b;
 
-        if(den==0)
+        if (den == 0)
             return false;
 
-        const float dsqr = num*num/den;
+        const float dsqr = num * num / den;
 
-        return dsqr<3.84*unc;
+        return dsqr < 3.84 * unc;
     }
 
-    std::ostream & operator<<(std::ostream &os, const Pinhole &ph) {
+    std::ostream &operator<<(std::ostream &os, const Pinhole &ph) {
         os << ph.mvParameters[0] << " " << ph.mvParameters[1] << " " << ph.mvParameters[2] << " " << ph.mvParameters[3];
         return os;
     }
 
-    std::istream & operator>>(std::istream &is, Pinhole &ph) {
+    std::istream &operator>>(std::istream &is, Pinhole &ph) {
         float nextParam;
-        for(size_t i = 0; i < 4; i++){
+        for (size_t i = 0; i < 4; i++) {
             assert(is.good());  //Make sure the input stream is good
             is >> nextParam;
             ph.mvParameters[i] = nextParam;
@@ -144,21 +143,18 @@ namespace ORB_SLAM3 {
         return is;
     }
 
-    bool Pinhole::IsEqual(GeometricCamera* pCam)
-    {
-        if(pCam->GetType() != GeometricCamera::CAM_PINHOLE)
+    bool Pinhole::IsEqual(GeometricCamera *pCam) {
+        if (pCam->GetType() != GeometricCamera::CAM_PINHOLE)
             return false;
 
-        Pinhole* pPinholeCam = (Pinhole*) pCam;
+        Pinhole *pPinholeCam = (Pinhole *) pCam;
 
-        if(size() != pPinholeCam->size())
+        if (size() != pPinholeCam->size())
             return false;
 
         bool is_same_camera = true;
-        for(size_t i=0; i<size(); ++i)
-        {
-            if(abs(mvParameters[i] - pPinholeCam->getParameter(i)) > 1e-6)
-            {
+        for (size_t i = 0; i < size(); ++i) {
+            if (abs(mvParameters[i] - pPinholeCam->getParameter(i)) > 1e-6) {
                 is_same_camera = false;
                 break;
             }

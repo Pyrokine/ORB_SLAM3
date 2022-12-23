@@ -30,7 +30,9 @@
 #ifdef _WINDOWS
 #include <time.h>
 #else
+
 #include <sys/time.h>
+
 #endif
 
 #include <string>
@@ -78,22 +80,21 @@ if (1) {\
 namespace g2o {
 
 #ifdef _WINDOWS
-typedef struct timeval {
-  long tv_sec;
-  long tv_usec;
-} timeval;
- int gettimeofday(struct timeval *tv, struct timezone *tz);
+    typedef struct timeval {
+      long tv_sec;
+      long tv_usec;
+    } timeval;
+     int gettimeofday(struct timeval *tv, struct timezone *tz);
 #endif
 
 /**
  * return the current time in seconds since 1. Jan 1970
  */
-inline double get_time() 
-{
-  struct timeval ts;
-  gettimeofday(&ts,0);
-  return ts.tv_sec + ts.tv_usec*1e-6;
-}
+    inline double get_time() {
+        struct timeval ts;
+        gettimeofday(&ts, 0);
+        return ts.tv_sec + ts.tv_usec * 1e-6;
+    }
 
 /**
  * return a monotonic increasing time which basically does not need to
@@ -103,7 +104,7 @@ inline double get_time()
  * On Linux we call clock_gettime() on other systems we currently
  * call get_time().
  */
- double get_monotonic_time();
+    double get_monotonic_time();
 
 /**
  * \brief Class to measure the time spent in a scope
@@ -111,14 +112,16 @@ inline double get_time()
  * To use this class, e.g. to measure the time spent in a function,
  * just create and instance at the beginning of the function.
  */
-class  ScopeTime {
-  public: 
-    ScopeTime(const char* title);
-    ~ScopeTime();
-  private:
-    std::string _title;
-    double _startTime;
-};
+    class ScopeTime {
+    public:
+        ScopeTime(const char *title);
+
+        ~ScopeTime();
+
+    private:
+        std::string _title;
+        double _startTime;
+    };
 
 } // end namespace
 

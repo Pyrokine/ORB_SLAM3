@@ -33,23 +33,29 @@
 
 namespace g2o {
 
-    class  Parameter : public HyperGraph::HyperGraphElement
-    {
-      public:
+    class Parameter : public HyperGraph::HyperGraphElement {
+    public:
         Parameter();
+
         virtual ~Parameter() {};
+
         //! read the data from a stream
-        virtual bool read(std::istream& is) = 0;
+        virtual bool read(std::istream &is) = 0;
+
         //! write the data to a stream
-        virtual bool write(std::ostream& os) const = 0;
-        int id() const {return _id;}
+        virtual bool write(std::ostream &os) const = 0;
+
+        int id() const { return _id; }
+
         void setId(int id_);
-        virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_PARAMETER;}
-      protected:
+
+        virtual HyperGraph::HyperGraphElementType elementType() const { return HyperGraph::HGET_PARAMETER; }
+
+    protected:
         int _id;
     };
 
-    typedef std::vector<Parameter*> ParameterVector;
+    typedef std::vector<Parameter *> ParameterVector;
 
 } // end namespace
 

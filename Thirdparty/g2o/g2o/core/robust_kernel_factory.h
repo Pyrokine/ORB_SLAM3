@@ -36,98 +36,95 @@
 
 namespace g2o {
 
-  class RobustKernel;
+    class RobustKernel;
 
     /**
    * \brief Abstract interface for allocating a robust kernel
    */
-  class  AbstractRobustKernelCreator
-  {
+    class AbstractRobustKernelCreator {
     public:
-      /**
-       * create a hyper graph element. Has to implemented in derived class.
-       */
-      virtual RobustKernel* construct() = 0;
-      virtual ~AbstractRobustKernelCreator() { }
-  };
+        /**
+         * create a hyper graph element. Has to implemented in derived class.
+         */
+        virtual RobustKernel *construct() = 0;
 
-  /**
-   * \brief templatized creator class which creates graph elements
-   */
-  template <typename T>
-  class RobustKernelCreator : public AbstractRobustKernelCreator
-  {
+        virtual ~AbstractRobustKernelCreator() {}
+    };
+
+    /**
+     * \brief templatized creator class which creates graph elements
+     */
+    template<typename T>
+    class RobustKernelCreator : public AbstractRobustKernelCreator {
     public:
-      RobustKernel* construct() { return new T;}
-  };
+        RobustKernel *construct() { return new T; }
+    };
 
-  /**
-   * \brief create robust kernels based on their human readable name
-   */
-  class  RobustKernelFactory
-  {
+    /**
+     * \brief create robust kernels based on their human readable name
+     */
+    class RobustKernelFactory {
     public:
 
-      //! return the instance
-      static RobustKernelFactory* instance();
+        //! return the instance
+        static RobustKernelFactory *instance();
 
-      //! free the instance
-      static void destroy();
+        //! free the instance
+        static void destroy();
 
-      /**
-       * register a tag for a specific creator
-       */
-      void registerRobustKernel(const std::string& tag, AbstractRobustKernelCreator* c);
+        /**
+         * register a tag for a specific creator
+         */
+        void registerRobustKernel(const std::string &tag, AbstractRobustKernelCreator *c);
 
-      /**
-       * unregister a tag for a specific creator
-       */
-      void unregisterType(const std::string& tag);
+        /**
+         * unregister a tag for a specific creator
+         */
+        void unregisterType(const std::string &tag);
 
-      /**
-       * construct a robust kernel based on its tag
-       */
-      RobustKernel* construct(const std::string& tag) const;
+        /**
+         * construct a robust kernel based on its tag
+         */
+        RobustKernel *construct(const std::string &tag) const;
 
-      /**
-       * return the creator for a specific tag
-       */
-      AbstractRobustKernelCreator* creator(const std::string& tag) const;
+        /**
+         * return the creator for a specific tag
+         */
+        AbstractRobustKernelCreator *creator(const std::string &tag) const;
 
-      /**
-       * get a list of all known robust kernels
-       */
-      void fillKnownKernels(std::vector<std::string>& types) const;
+        /**
+         * get a list of all known robust kernels
+         */
+        void fillKnownKernels(std::vector<std::string> &types) const;
 
     protected:
 
-      typedef std::map<std::string, AbstractRobustKernelCreator*>              CreatorMap;
-      RobustKernelFactory();
-      ~RobustKernelFactory();
+        typedef std::map<std::string, AbstractRobustKernelCreator *> CreatorMap;
 
-      CreatorMap _creator;     ///< look-up map for the existing creators
+        RobustKernelFactory();
+
+        ~RobustKernelFactory();
+
+        CreatorMap _creator;     ///< look-up map for the existing creators
 
     private:
-      static RobustKernelFactory* factoryInstance;
-  };
+        static RobustKernelFactory *factoryInstance;
+    };
 
-  template<typename T>
-  class RegisterRobustKernelProxy
-  {
+    template<typename T>
+    class RegisterRobustKernelProxy {
     public:
-      RegisterRobustKernelProxy(const std::string& name) : _name(name)
-      {
-        RobustKernelFactory::instance()->registerRobustKernel(_name, new RobustKernelCreator<T>());
-      }
+        RegisterRobustKernelProxy(const std::string &name) : _name(name) {
+            RobustKernelFactory::instance()->registerRobustKernel(_name, new RobustKernelCreator<T>());
+        }
 
-      ~RegisterRobustKernelProxy()
-      {
-        RobustKernelFactory::instance()->unregisterType(_name);
-      }
+        ~RegisterRobustKernelProxy() {
+            RobustKernelFactory::instance()->unregisterType(_name);
+        }
 
     private:
-      std::string _name;
-  };
+        std::string _name;
+    };
 
 #if defined _MSC_VER && defined G2O_SHARED_LIBS
 #  define G2O_ROBUST_KERNEL_FACTORY_EXPORT __declspec(dllexport)
@@ -137,7 +134,7 @@ namespace g2o {
 #  define G2O_ROBUST_KERNEL_FACTORY_IMPORT
 #endif
 
-  // These macros are used to automate registering of robust kernels and forcing linkage
+    // These macros are used to automate registering of robust kernels and forcing linkage
 #define G2O_REGISTER_ROBUST_KERNEL(name, classname) \
     extern "C" void G2O_ROBUST_KERNEL_FACTORY_EXPORT g2o_robust_kernel_##classname(void) {} \
     static g2o::RegisterRobustKernelProxy<classname> g_robust_kernel_proxy_##classname(#name);

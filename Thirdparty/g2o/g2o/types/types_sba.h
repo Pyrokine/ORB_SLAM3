@@ -37,24 +37,25 @@ namespace g2o {
 /**
  * \brief Point vertex, XYZ
  */
- class VertexSBAPointXYZ : public BaseVertex<3, Vector3d>
-{
-  public:
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW    
-    VertexSBAPointXYZ();
-    virtual bool read(std::istream& is);
-    virtual bool write(std::ostream& os) const;
+    class VertexSBAPointXYZ : public BaseVertex<3, Vector3d> {
+    public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    virtual void setToOriginImpl() {
-      _estimate.fill(0.);
-    }
+        VertexSBAPointXYZ();
 
-    virtual void oplusImpl(const double* update)
-    {
-      Eigen::Map<const Vector3d> v(update);
-      _estimate += v;
-    }
-};
+        virtual bool read(std::istream &is);
+
+        virtual bool write(std::ostream &os) const;
+
+        virtual void setToOriginImpl() {
+            _estimate.fill(0.);
+        }
+
+        virtual void oplusImpl(const double *update) {
+            Eigen::Map<const Vector3d> v(update);
+            _estimate += v;
+        }
+    };
 
 } // end namespace
 

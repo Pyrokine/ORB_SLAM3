@@ -25,42 +25,36 @@
 #include <string>
 
 
-namespace ORB_SLAM3
-{
+namespace ORB_SLAM3 {
 
-class ViewerConfig
-{
+    class ViewerConfig {
 
-};
+    };
 
-class CameraConfig
-{
+    class CameraConfig {
 
-};
+    };
 
-class ORBExtractorConfig
-{
+    class ORBExtractorConfig {
 
-};
+    };
 
-class IMUConfig
-{
+    class IMUConfig {
 
-};
+    };
 
-class ConfigParser
-{
-public:
-    bool ParseConfigFile(std::string &strConfigFile);
+    class ConfigParser {
+    public:
+        bool ParseConfigFile(std::string &strConfigFile);
 
-private:
+    private:
 
-    ViewerConfig mViewerConfig;
-    CameraConfig mCameraConfig;
-    ORBExtractorConfig mORBConfig;
-    IMUConfig mIMUConfig;
+        ViewerConfig mViewerConfig;
+        CameraConfig mCameraConfig;
+        ORBExtractorConfig mORBConfig;
+        IMUConfig mIMUConfig;
 
-};
+    };
 
 }
 
