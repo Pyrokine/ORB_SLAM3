@@ -19,7 +19,6 @@
 #include "ViewerAR.h"
 
 #include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core/eigen.hpp>
 
 #include <mutex>
 #include <thread>
@@ -100,7 +99,7 @@ namespace ORB_SLAM3 {
 
         vector<Plane *> vpPlane;
 
-        while (1) {
+        while (true) {
 
             if (menu_LocalizationMode && !bLocalizationMode) {
                 mpSystem->ActivateLocalizationMode();
@@ -381,9 +380,7 @@ namespace ORB_SLAM3 {
             MapPoint *pMP = vMPs[i];
             if (pMP) {
                 if (pMP->Observations() > 5) {
-                    cv::Mat WorldPos;
-                    cv::eigen2cv(pMP->GetWorldPos(), WorldPos);
-                    vPoints.push_back(WorldPos);
+                    vPoints.push_back(ORB_SLAM3::Converter::toCvMat(pMP->GetWorldPos()));
                     vPointMP.push_back(pMP);
                 }
             }
@@ -439,9 +436,7 @@ namespace ORB_SLAM3 {
             const float f = 1.0f / sqrt(a * a + b * b + c * c + d * d);
 
             for (int i = 0; i < N; i++) {
-                vDistances[i] =
-                        fabs(vPoints[i].at<float>(0) * a + vPoints[i].at<float>(1) * b + vPoints[i].at<float>(2) * c +
-                             d) * f;
+                vDistances[i] = fabs(vPoints[i].at<float>(0) * a + vPoints[i].at<float>(1) * b + vPoints[i].at<float>(2) * c + d) * f;
             }
 
             vector<float> vSorted = vDistances;
@@ -497,8 +492,7 @@ namespace ORB_SLAM3 {
         for (int i = 0; i < N; i++) {
             MapPoint *pMP = mvMPs[i];
             if (!pMP->isBad()) {
-                cv::Mat Xw;
-                cv::eigen2cv(pMP->GetWorldPos(), Xw);
+                cv::Mat Xw = ORB_SLAM3::Converter::toCvMat(pMP->GetWorldPos());
                 o += Xw;
                 A.row(nPoints).colRange(0, 3) = Xw.t();
                 nPoints++;

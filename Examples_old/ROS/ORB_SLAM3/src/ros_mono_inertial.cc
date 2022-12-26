@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-
     if (argc == 4) {
         std::string sbEqual(argv[3]);
         if (sbEqual == "true")
@@ -92,8 +91,8 @@ int main(int argc, char **argv) {
     ImageGrabber igb(&SLAM, &imugb, bEqual); // TODO
 
     // Maximum delay, 5 seconds
-    ros::Subscriber sub_imu = n.subscribe("/imu", 1000, &ImuGrabber::GrabImu, &imugb);
-    ros::Subscriber sub_img0 = n.subscribe("/camera/image_raw", 100, &ImageGrabber::GrabImage, &igb);
+    ros::Subscriber sub_imu = n.subscribe("/camera/imu", 1000, &ImuGrabber::GrabImu, &imugb);
+    ros::Subscriber sub_img0 = n.subscribe("/camera/color/image_raw", 100, &ImageGrabber::GrabImage, &igb);
 
     std::thread sync_thread(&ImageGrabber::SyncWithImu, &igb);
 

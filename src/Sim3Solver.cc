@@ -29,12 +29,17 @@
 #include "Thirdparty/DBoW2/DUtils/Random.h"
 
 namespace ORB_SLAM3 {
-
-
-    Sim3Solver::Sim3Solver(KeyFrame *pKF1, KeyFrame *pKF2, const vector<MapPoint *> &vpMatched12, const bool bFixScale,
-                           vector<KeyFrame *> vpKeyFrameMatchedMP) :
-            mnIterations(0), mnBestInliers(0), mbFixScale(bFixScale),
-            pCamera1(pKF1->mpCamera), pCamera2(pKF2->mpCamera) {
+    Sim3Solver::Sim3Solver(
+            KeyFrame *pKF1,
+            KeyFrame *pKF2,
+            const vector<MapPoint *> &vpMatched12,
+            const bool bFixScale,
+            vector<KeyFrame *> vpKeyFrameMatchedMP):
+            mnIterations(0),
+            mnBestInliers(0),
+            mbFixScale(bFixScale),
+            pCamera1(pKF1->mpCamera),
+            pCamera2(pKF2->mpCamera) {
         bool bDifferentKFs = false;
         if (vpKeyFrameMatchedMP.empty()) {
             bDifferentKFs = true;
@@ -291,7 +296,6 @@ namespace ORB_SLAM3 {
         // Horn 1987, Closed-form solution of absolute orientataion using unit quaternions
 
         // Step 1: Centroid and relative coordinates
-
         Eigen::Matrix3f Pr1; // Relative coordinates to centroid (set 1)
         Eigen::Matrix3f Pr2; // Relative coordinates to centroid (set 2)
         Eigen::Vector3f O1; // Centroid of P1
@@ -301,7 +305,6 @@ namespace ORB_SLAM3 {
         ComputeCentroid(P2, Pr2, O2);
 
         // Step 2: Compute M matrix
-
         Eigen::Matrix3f M = Pr2 * Pr1.transpose();
 
         // Step 3: Compute N matrix
@@ -321,10 +324,9 @@ namespace ORB_SLAM3 {
         N44 = -M(0, 0) - M(1, 1) + M(2, 2);
 
         N << N11, N12, N13, N14,
-                N12, N22, N23, N24,
-                N13, N23, N33, N34,
-                N14, N24, N34, N44;
-
+             N12, N22, N23, N24,
+             N13, N23, N33, N34,
+             N14, N24, N34, N44;
 
         // Step 4: Eigenvector of the highest eigenvalue
         Eigen::EigenSolver<Eigen::Matrix4f> eigSolver;
@@ -341,14 +343,14 @@ namespace ORB_SLAM3 {
         // Rotation angle. sin is the norm of the imaginary part, cos is the real part
         double ang = atan2(vec.norm(), evec(0, maxIndex));
 
-        vec = 2 * ang * vec / vec.norm(); //Angle-axis representation. quaternion angle is the half
+        if (vec.norm() != 0)
+            vec = 2 * ang * vec / vec.norm(); //Angle-axis representation. quaternion angle is the half
         mR12i = Sophus::SO3f::exp(vec).matrix();
 
         // Step 5: Rotate set 2
         Eigen::Matrix3f P3 = mR12i * Pr2;
 
         // Step 6: Scale
-
         if (!mbFixScale) {
             double cvnom = Converter::toCvMat(Pr1).dot(Converter::toCvMat(P3));
             double nom = (Pr1.array() * P3.array()).sum();
@@ -359,21 +361,20 @@ namespace ORB_SLAM3 {
             double den = aux_P3.sum();
 
             ms12i = nom / den;
-        } else
+        }
+        else
             ms12i = 1.0f;
 
         // Step 7: Translation
         mt12i = O1 - ms12i * mR12i * O2;
 
         // Step 8: Transformation
-
         // Step 8.1 T12
         mT12i.setIdentity();
 
         Eigen::Matrix3f sR = ms12i * mR12i;
         mT12i.block<3, 3>(0, 0) = sR;
         mT12i.block<3, 1>(0, 3) = mt12i;
-
 
         // Step 8.2 T21
         mT21i.setIdentity();
@@ -432,8 +433,8 @@ namespace ORB_SLAM3 {
         vP2D.clear();
         vP2D.reserve(vP3Dw.size());
 
-        for (size_t i = 0, iend = vP3Dw.size(); i < iend; i++) {
-            Eigen::Vector3f P3Dc = Rcw * vP3Dw[i] + tcw;
+        for (const auto & i : vP3Dw) {
+            Eigen::Vector3f P3Dc = Rcw * i + tcw;
             Eigen::Vector2f pt2D = pCamera->project(P3Dc);
             vP2D.push_back(pt2D);
         }
@@ -443,8 +444,8 @@ namespace ORB_SLAM3 {
         vP2D.clear();
         vP2D.reserve(vP3Dc.size());
 
-        for (size_t i = 0, iend = vP3Dc.size(); i < iend; i++) {
-            Eigen::Vector2f pt2D = pCamera->project(vP3Dc[i]);
+        for (const auto & i : vP3Dc) {
+            Eigen::Vector2f pt2D = pCamera->project(i);
             vP2D.push_back(pt2D);
         }
     }
